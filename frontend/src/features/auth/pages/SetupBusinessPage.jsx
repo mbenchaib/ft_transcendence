@@ -1,26 +1,56 @@
 import AuthLayout from '../components/AuthLayout'
 import FormInput from '../components/FormInput'
+import SubmitButton from '../components/SubmitButton'
+import Footer from '../components/CardFooter'
+import Intro from '../components/CardIntro'
+import authService from '../services/authService'
+import { useState } from 'react'
 
 const SetupForm = () => {
+    const initialState = {
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: ""
+    }
+
+    const [form, setForm] = useState(initialState)
+
+    const handleSetup = (event) => {
+        event.preventDefault()
+        authService.signUp({
+            firstName: form.firstName,
+            lastName: form.lastName,
+            email: form.email,
+            password: form.password
+        })
+    }
+
     return (
-        <form onSubmit={(event) => {event.preventDefault()}}>
+        <form className="flex flex-col gap-4" onSubmit={handleSetup}>
             <FormInput
-                label="Business name"
+                value={form.firstName}
+                setForm={setForm}
+                label="First name"
                 type="text"
-                id="businessName"
-                name="businessName"
+                id="firstName"
+                name="firstName"
                 required
             />
 
             <FormInput
-                label="Your name"
+                value={form.lastName}
+                setForm={setForm}
+                label="Last name"
                 type="text"
-                id="OwnerName"
-                name="OwnerName"
+                id="lastName"
+                name="lastName"
                 required
             />
 
             <FormInput
+                value={form.email}
+                setForm={setForm}
                 label="Business email"
                 type="email"
                 id="email"
@@ -29,14 +59,18 @@ const SetupForm = () => {
             />
 
             <FormInput
+                value={form.password}
+                setForm={setForm}
                 label="Password"
                 type="password"
                 id="password"
                 name="password"
+                minLength={15}
+                maxLength={64}
                 required
             />
 
-            <button type="submit">Create my workspace</button>
+            <SubmitButton label="Create my Workspace" />
         </form>
     )
 }
@@ -44,9 +78,9 @@ const SetupForm = () => {
 const SetupBusinessPage = () => {
     return (
         <AuthLayout>
-            <h1>Start Your Engine</h1>
-            <p>Create a CRM workspace for your rental car business.</p>
+            <Intro title="Start Your Engine" description="Create a CRM workspace for your rental car business." />
             <SetupForm />
+            <Footer message="Already have a workspace?" linkText="Log in instead" link="/login" />
         </AuthLayout>
     )
 }
