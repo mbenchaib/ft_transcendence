@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-ft_transcendence}
+      POSTGRES_USER: ${DB_USER:-ft_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ft_user} -d ${DB_NAME:-ft_transcendence}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
