@@ -1,4 +1,10 @@
-9bel mat3mel ay haja run hade cmds hayanstaly requerments bach trun project
+9bel mat3mel ay haja run hade cmds bach tcreate venv l project
+
+```
+python -m venv .env
+```
+
+hayanstaly requerments bach trun project
 
 ```
 python -m pip install -r requirements.txt
@@ -15,7 +21,7 @@ ou ida installiti chi package t9dar trun had cmd bach tzido f requirements.txt b
 python -m pip freeze > requirements.txt
 ```
 
-ou hadi structure dyal file
+ou hadi structure dyal file lhad lank
 
 ```
 .
