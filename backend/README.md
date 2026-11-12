@@ -3,8 +3,13 @@
 ```
 python -m pip install -r requirements.txt
 ```
+ou moraha run docker compose hit fih postgres lamabgitich roda f config n sqlite ou data katsejel f file ismo postgres_data
 
-ou ida installiti chi package t9dar trun had cmd bach tzido f requirements.txt
+```
+docker compose up
+```
+
+ou ida installiti chi package t9dar trun had cmd bach tzido f requirements.txt blama tzido byedek
 
 ```
 python -m pip freeze > requirements.txt
