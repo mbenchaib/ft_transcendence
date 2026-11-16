@@ -1,0 +1,10 @@
+# Local deployment secrets
+.env
+.env.*
+!.env.example
+
+# Local deployment backups
+*.bak
+
+# Local Elasticsearch data, if bind mounts are used
+observability/data/
