@@ -33,8 +33,20 @@ const FormInput = ({label, id, value, setForm, ...inputProps}) => {
             {!password
                 ? <input className={inputClassName} id={id} {...inputProps} value={value} onChange={handleInput}  />
                 : <div className="flex items-center">
-                    <input className={`${inputClassName} w-full`} id={id} {...inputProps} value={value} onChange={handleInput}  />
-                    {showPassword ? <Eye className="-ml-7" size={16} onClick={handleEye} /> : <EyeOff className="-ml-7" size={16} onClick={handleEye} />}
+                    <input className={`${inputClassName} w-full`} id={id} {...inputProps} type={showPassword ? "text" : "password"} value={value} onChange={handleInput}  />
+                    {
+                        <button
+                            type="button"
+                            onClick={handleEye}
+                            aria-label={showPassword ? "Show password" : "Hide password"}
+                            className="-ml-7"
+                        >
+                            {showPassword
+                                ? <Eye size={16} aria-hidden="true" />
+                                : <EyeOff size={16} aria-hidden="true" />
+                            }
+                        </button>
+                    }
                 </div>
             }           
         </div>

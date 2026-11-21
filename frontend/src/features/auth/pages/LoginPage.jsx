@@ -64,6 +64,8 @@ const LoginForm = () => {
                 id="password"
                 name="password"
                 placeholder="Enter you password"
+                minLength={15}
+                maxLength={64}
                 required
             />
 

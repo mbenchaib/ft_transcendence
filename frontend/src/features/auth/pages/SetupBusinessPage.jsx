@@ -35,6 +35,7 @@ const SetupForm = () => {
                 type="text"
                 id="firstName"
                 name="firstName"
+                placeholder="Enter your first name"
                 required
             />
 
@@ -45,6 +46,7 @@ const SetupForm = () => {
                 type="text"
                 id="lastName"
                 name="lastName"
+                placeholder="Enter your last name"
                 required
             />
 
@@ -55,6 +57,7 @@ const SetupForm = () => {
                 type="email"
                 id="email"
                 name="email"
+                placeholder="you@company.com"
                 required
             />
 
@@ -65,6 +68,7 @@ const SetupForm = () => {
                 type="password"
                 id="password"
                 name="password"
+                placeholder="Enter you password"
                 minLength={15}
                 maxLength={64}
                 required

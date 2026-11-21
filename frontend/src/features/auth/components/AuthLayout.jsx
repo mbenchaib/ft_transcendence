@@ -45,10 +45,10 @@ const AccessPanel = ({children}) => {
                 </p>
                 <div className="flex gap-8 mt-9 pt-6 border-t border-[#d8d4ca]">
                     <p className="text-2xl font-['Libre_Caslon_Display'] font-normal text-[#171713]">360°<br/>
-                        <span className="mt-2 block text-xs font-sans font-normal text-[#868178]">CUSTOMER VIEW</span>
+                        <span className="mt-2 block text-xs font-sans font-normal text-[#6B6258]">CUSTOMER VIEW</span>
                     </p>
                      <p className="text-2xl font-['Libre_Caslon_Display'] font-normal text-[#171713]">Never<br/>
-                        <span className="mt-2 block text-xs font-sans font-normal text-[#868178]">MISS A FOLLOW-U</span>
+                        <span className="mt-2 block text-xs font-sans font-normal text-[#6B6258]">MISS A FOLLOW-UP</span>
                     </p>
                 </div>
             </div>
