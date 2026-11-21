@@ -33,6 +33,7 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
     mem_limit: 1536m
+
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
       - elasticsearch_certs:/usr/share/elasticsearch/config/certs:ro
@@ -48,6 +49,11 @@ services:
       timeout: 10s
       retries: 20
       start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
     restart: unless-stopped
   logstash:
     image: docker.elastic.co/logstash/logstash:${ELK_VERSION:?Set ELK_VERSION}
@@ -71,6 +77,11 @@ services:
       - ./tls/logstash.pkcs8.key:/usr/share/logstash/config/tls/logstash.pkcs8.key:ro
     networks:
       - observability_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
     restart: unless-stopped
   filebeat:
     image: docker.elastic.co/beats/filebeat:${ELK_VERSION:?Set ELK_VERSION}
@@ -100,6 +111,11 @@ services:
       - filebeat_data:/usr/share/filebeat/data
     networks:
       - observability_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
     restart: unless-stopped
 networks:
   observability_net:
