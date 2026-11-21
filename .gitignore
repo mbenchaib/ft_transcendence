@@ -8,3 +8,7 @@
 
 # Local Elasticsearch data, if bind mounts are used
 observability/data/
+# Local TLS private keys
+/observability/tls/*.key
+/observability/tls/*.csr
+/observability/tls/*.srl
