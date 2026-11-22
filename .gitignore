@@ -28,3 +28,7 @@ __pycache__/
 # Backend SQLite database
 /backend/ft_trans/db.sqlite3
 
+
+# Build artifacts
+frontend/node_modules/
+frontend/dist/

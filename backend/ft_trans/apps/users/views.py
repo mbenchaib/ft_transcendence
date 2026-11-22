@@ -1,4 +1,8 @@
 from .imports import *
+from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 # 1. CSRF INITIALIZER — Frontend calls this ONCE on page load
 @ensure_csrf_cookie
@@ -10,6 +14,7 @@ def get_csrf(request):
 
 
 # 2. REGISTER VIEW
+@csrf_protect
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
 @permission_classes([AllowAny])
@@ -23,7 +28,12 @@ def register(request):
         return JsonResponse({"error": "All fields are required."}, status=400)
 
     try:
-        user = User.objects.create_user(username=email, email=email, password=password, first_name=first_name, last_name=last_name, is_staff=True)
+        validate_password(password)
+    except ValidationError as exc:
+        return JsonResponse({"error": " ".join(exc.messages)}, status=400)
+
+    try:
+        user = User.objects.create_user(username=email, email=email, password=password, first_name=first_name, last_name=last_name)
     except IntegrityError:
         return JsonResponse({"error": "Email already registered."}, status=409)
 
@@ -31,6 +41,7 @@ def register(request):
 
 
 # 3. LOGIN VIEW
+@csrf_protect
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
 @permission_classes([AllowAny])
@@ -58,6 +69,7 @@ def login_view(request):
 
 
 # 4. LOGOUT VIEW
+@csrf_protect
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -102,17 +114,20 @@ def logout_view(request):
 #     return JsonResponse({"workers": data})
 
 # test view
+@method_decorator(csrf_protect, name="dispatch")
 class EmployeesView(APIView):
     
     authentication_classes = [SessionAuthentication]
 
     def get_permissions(self):
         if self.request.method in ['POST', 'GET']:
-            return [IsAuthenticated(), IsAdminUser()]
+            return [IsAuthenticated()]
 
         return [IsAuthenticated()]
 
     def get(self, request):
+        if request.user.boss_id is not None:
+            return JsonResponse({"error": "Only workspace owners can manage employees."}, status=403)
         workers = request.user.workers.all()
         data = [
             {
@@ -125,6 +140,8 @@ class EmployeesView(APIView):
         return JsonResponse({"workers": data})
 
     def post(self, request):
+        if request.user.boss_id is not None:
+            return JsonResponse({"error": "Only workspace owners can manage employees."}, status=403)
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
         email = request.data.get('email')
@@ -133,6 +150,10 @@ class EmployeesView(APIView):
         if not email or not password or not first_name or not last_name:
             return JsonResponse({"error": "All fields are required."}, status=400)
     
+        try:
+            validate_password(password)
+        except ValidationError as exc:
+            return JsonResponse({"error": " ".join(exc.messages)}, status=400)
         try:
             emp = User.objects.create_user(username=email, email=email, password=password, last_name=last_name, first_name=first_name, boss=request.user)
         except IntegrityError:

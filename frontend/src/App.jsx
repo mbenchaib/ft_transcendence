@@ -1,18 +1,14 @@
-import { BrowserRouter, Routes, Route } from "react-router"
-import LoginPage from "./features/auth/pages/LoginPage"
-import SetupBusinessPage from "./features/auth/pages/SetupBusinessPage"
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router'
+import LoginPage from './features/auth/pages/LoginPage'
+import SetupBusinessPage from './features/auth/pages/SetupBusinessPage'
+import WorkspacePage from './features/workspace/WorkspacePage'
 import './index.css'
-
-function App() {
-
-      return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/setup-business" element={<SetupBusinessPage />} />
-            </Routes>
-        </BrowserRouter>
-    )
+export default function App() {
+  return <BrowserRouter><Routes>
+    <Route path="/" element={<Navigate to="/login" replace />} />
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/setup-business" element={<SetupBusinessPage />} />
+    <Route path="/workspace" element={<WorkspacePage />} />
+    <Route path="*" element={<Navigate to="/login" replace />} />
+  </Routes></BrowserRouter>
 }
-
-export default App

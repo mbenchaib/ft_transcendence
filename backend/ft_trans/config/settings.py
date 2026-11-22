@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,14 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pwznnthwi42ab(k7lbyxxph)k+ohx-6#1vql4)!+p=q=k$+1i='
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'development-only-change-me-before-deploying')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '0') == '1'
 
-ALLOWED_HOSTS = [
-    '*',
-]
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,backend').split(',')
 
 
 # Application definition
@@ -86,24 +85,20 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ft_transcendence',
-#         'USER': 'ft_user',
-#         'PASSWORD': 'password',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
-#     }
-# }
-
-# database settings for sqlite3 (commented out)
-DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-       'NAME': BASE_DIR / 'db.sqlite3',
-   }
-}
+if os.environ.get('DB_HOST'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'ft_transcendence'),
+            'USER': os.environ.get('DB_USER', 'ft_user'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ['DB_HOST'],
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
+else:
+    # Local development and test fallback only.
+    DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}
 
 
 # Password validation
@@ -156,8 +151,10 @@ MAILERS = {
 AUTH_USER_MODEL = "users.User"
 
 # csrf setting 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8080,http://localhost:5173').split(',')
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 APPEND_SLASH = False

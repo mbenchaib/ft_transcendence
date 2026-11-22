@@ -14,17 +14,14 @@ const FormInput = ({label, id, value, setForm, ...inputProps}) => {
     `
 
     const password = id === "password" ? true : false
-    console.log(password)
 
     const handleInput = (event) => {
         const {name, value} = event.target
-        console.log(value)
         setForm(prevForm => ({...prevForm, [name]: value}))
     }
 
-    const handleEye = (event) => {
+    const handleEye = () => {
         setShowPassword(!showPassword)
-        console.log(showPassword)
     }
 
     return (
@@ -38,7 +35,7 @@ const FormInput = ({label, id, value, setForm, ...inputProps}) => {
                         <button
                             type="button"
                             onClick={handleEye}
-                            aria-label={showPassword ? "Show password" : "Hide password"}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
                             className="-ml-7"
                         >
                             {showPassword
