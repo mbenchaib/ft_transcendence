@@ -1,3 +1,4 @@
+
 # Local deployment secrets
 .env
 .env.*
@@ -6,9 +7,18 @@
 # Local deployment backups
 *.bak
 
-# Local Elasticsearch data, if bind mounts are used
+# Local Elasticsearch data
 observability/data/
+
 # Local TLS private keys
 /observability/tls/*.key
 /observability/tls/*.csr
 /observability/tls/*.srl
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Backend PostgreSQL data
+/backend/postgres_data/
+
