@@ -1,5 +1,30 @@
+
+# Python virtual environment
 .venv/
+
+# Local deployment secrets
+.env
+.env.*
+!.env.example
+
+# Local deployment backups
+*.bak
+
+# Local Elasticsearch data
+observability/data/
+
+# Local TLS private keys
+/observability/tls/*.key
+/observability/tls/*.csr
+/observability/tls/*.srl
+
+# Python cache
 __pycache__/
 *.py[cod]
+
+# Backend PostgreSQL data
 /backend/postgres_data/
+
+# Backend SQLite database
 /backend/ft_trans/db.sqlite3
+

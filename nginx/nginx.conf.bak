@@ -1,0 +1,10 @@
+server {
+	listen 80;
+
+	location /hello {
+		return 200 "hello";
+	}
+	location /api/ {
+		proxy_pass http://backend:8000/;
+	}
+}
