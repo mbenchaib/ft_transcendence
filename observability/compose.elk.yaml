@@ -101,12 +101,13 @@ services:
       - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - ./tls/ca.crt:/usr/share/filebeat/certs/ca.crt:ro
       - type: bind
-        source: ${NGINX_DOCKER_LOG:?Set NGINX_DOCKER_LOG}
-        target: /logs/nginx.json.log
+        source: ${NGINX_DOCKER_LOG_DIR:?Set NGINX_DOCKER_LOG_DIR}
+        target: /logs/nginx
         read_only: true
+
       - type: bind
-        source: ${BACKEND_DOCKER_LOG:?Set BACKEND_DOCKER_LOG}
-        target: /logs/backend.json.log
+        source: ${BACKEND_DOCKER_LOG_DIR:?Set BACKEND_DOCKER_LOG_DIR}
+        target: /logs/backend
         read_only: true
       - filebeat_data:/usr/share/filebeat/data
     networks:
