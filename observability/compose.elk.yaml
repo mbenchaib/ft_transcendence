@@ -1,0 +1,128 @@
+services:
+  setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION:?Set ELK_VERSION}
+    user: "0"
+    entrypoint:
+      - /bin/bash
+      - /setup/create-certs.sh
+    volumes:
+      - elasticsearch_certs:/usr/share/elasticsearch/config/certs
+      - ./setup/create-certs.sh:/setup/create-certs.sh:ro
+    networks:
+      - observability_net
+    restart: "no"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION:?Set ELK_VERSION}
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    environment:
+      - node.name=es01
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:?Set ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms768m -Xmx768m
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=certs/es01/es01.key
+      - xpack.security.http.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=certs/es01/es01.key
+      - xpack.security.transport.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+    mem_limit: 1536m
+
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+      - elasticsearch_certs:/usr/share/elasticsearch/config/certs:ro
+    networks:
+      observability_net:
+        aliases:
+          - es01
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'curl -s --cacert /usr/share/elasticsearch/config/certs/ca/ca.crt https://localhost:9200/ | grep -q "missing authentication credentials"'
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+    restart: unless-stopped
+  logstash:
+    image: docker.elastic.co/logstash/logstash:${ELK_VERSION:?Set ELK_VERSION}
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      LS_JAVA_OPTS: "-Xms256m -Xmx256m"
+      LOGSTASH_WRITER_PASSWORD: ${LOGSTASH_WRITER_PASSWORD:?Set writer password}
+    command:
+      - logstash
+      - -f
+      - /usr/share/logstash/pipeline/crm-beats.conf
+      - --pipeline.workers
+      - "1"
+    mem_limit: 768m
+    volumes:
+      - ./logstash/active/crm-beats.conf:/usr/share/logstash/pipeline/crm-beats.conf:ro
+      - ./logstash/certs/ca.crt:/usr/share/logstash/config/certs/ca.crt:ro
+      - ./tls/logstash.crt:/usr/share/logstash/config/tls/logstash.crt:ro
+      - ./tls/logstash.pkcs8.key:/usr/share/logstash/config/tls/logstash.pkcs8.key:ro
+    networks:
+      - observability_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+    restart: unless-stopped
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${ELK_VERSION:?Set ELK_VERSION}
+    user: "0"
+    depends_on:
+      - logstash
+    command:
+      - filebeat
+      - -e
+      - --strict.perms=false
+    mem_limit: 256m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./tls/ca.crt:/usr/share/filebeat/certs/ca.crt:ro
+      - type: bind
+        source: ${NGINX_DOCKER_LOG:?Set NGINX_DOCKER_LOG}
+        target: /logs/nginx.json.log
+        read_only: true
+      - type: bind
+        source: ${BACKEND_DOCKER_LOG:?Set BACKEND_DOCKER_LOG}
+        target: /logs/backend.json.log
+        read_only: true
+      - filebeat_data:/usr/share/filebeat/data
+    networks:
+      - observability_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+    restart: unless-stopped
+networks:
+  observability_net:
+    driver: bridge
+    internal: true
+
+volumes:
+  elasticsearch_data:
+  elasticsearch_certs:
+  filebeat_data:
