@@ -1,12 +1,16 @@
-import api from '../../../lib/axios'
-const csrf = () => api.get('/api/auth/csrf')
-const login = async credentials => {
-  await csrf()
-  return (await api.post('/api/auth/login', credentials)).data
+import api from "../../../lib/axios"
+
+const login = async (credentials) => {
+  const response = await api.post('auth/register', credentials)
+  return response.data
 }
-const signUp = async registrationData => {
-  await csrf()
-  return (await api.post('/api/auth/register', registrationData)).data
+
+const signUp = async (registrationData) => {
+  const response = await api.post('/auth/login', registrationData)
+  return response.data
 }
-const logout = async () => (await api.post('/api/auth/logout')).data
-export default { csrf, login, signUp, logout }
+
+export default {
+  login: login,
+  signUp: signUp,
+}

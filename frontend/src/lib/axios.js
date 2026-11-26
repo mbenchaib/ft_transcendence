@@ -1,12 +1,19 @@
-import axios from 'axios'
+import axios from "axios"
+import getCookie from "./getCookie"
 
-function cookie(name) {
-  return document.cookie.split('; ').find(part => part.startsWith(`${name}=`))?.split('=')[1]
-}
-const api = axios.create({ baseURL: '/', withCredentials: true })
-api.interceptors.request.use(config => {
-  const token = cookie('csrftoken')
-  if (token) config.headers['X-CSRFToken'] = decodeURIComponent(token)
-  return config
+const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true
+})
+
+api.interceptors.request.use(async (config) => {
+  const token = getCookie("csrftoken")
+  if (!token){
+    await api.get('/auth/csrf')
+    token = getCookie("csrftoken")
+  }
+  if (token)
+    config.headers["X-CSRFToken"] = token
+  return config;
 })
 export default api

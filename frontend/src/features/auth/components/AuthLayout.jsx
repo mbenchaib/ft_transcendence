@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router'
-import loginCar from '../../../assets/login-car.jpg'
+import loginCar from '@/assets/login-car.jpg'
+import AuthFooter from '@/features/auth/components/AuthFooter'
 
 const Hero = () => {
     return (
@@ -36,7 +37,7 @@ const AccessPanel = ({children}) => {
     const slidingPill = "text-white font-semibold border border-solid border-black bg-black rounded-full"
 
     return (
-        <section className="relative z-10 flex justify-center gap-65 -mt-8">
+        <section className="relative z-10 flex justify-center gap-65 -mt-8 pb-12">
             <div className="hidden sm:block mt-25 mx-4">
                 <p className="text-[#6E6B63] font-normal">
                     Turn every inquiry into a lasting relationship.<br/> 
@@ -70,6 +71,7 @@ const AuthLayout = ({children}) => {
         <main className="bg-[#F2F0EB]">
             <Hero />
             <AccessPanel>{children}</AccessPanel>
+            <AuthFooter />
         </main>
     )
 }
