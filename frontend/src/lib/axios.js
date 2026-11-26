@@ -7,7 +7,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(async (config) => {
-  const token = getCookie("csrftoken")
+  let token = getCookie("csrftoken")
   if (!token){
     await api.get('/auth/csrf')
     token = getCookie("csrftoken")
