@@ -1,7 +1,12 @@
+import AppSidebar from "@/components/layout/AppSidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
+
 const AppLayout = () => {
     return (
-        <div>
-            
-        </div>
+        <SidebarProvider>
+            <AppSidebar />
+        </SidebarProvider>
     )
 }
+
+export default AppLayout
