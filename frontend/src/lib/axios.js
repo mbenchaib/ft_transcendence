@@ -16,5 +16,4 @@ api.interceptors.request.use(async (config) => {
     config.headers["X-CSRFToken"] = token
   return config;
 })
-
 export default api

@@ -1,0 +1,20 @@
+filebeat.inputs:
+  - type: filestream
+    id: crm-docker-logs
+    enabled: true
+    paths:
+      - /logs/nginx/*-json.log
+      - /logs/backend/*-json.log
+    parsers:
+      - container:
+          format: docker
+
+    prospector.scanner.symlinks: false
+output.logstash:
+  hosts: ["logstash:5044"]
+  ssl.enabled: true
+  ssl.certificate_authorities:
+    - "/usr/share/filebeat/certs/ca.crt"
+  ssl.verification_mode: full
+
+logging.level: info

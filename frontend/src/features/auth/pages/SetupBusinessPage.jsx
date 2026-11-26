@@ -5,6 +5,7 @@ import Footer from '../components/CardFooter'
 import Intro from '../components/CardIntro'
 import authService from '../services/authService'
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 
 const SetupForm = () => {
     const initialState = {
@@ -16,14 +17,24 @@ const SetupForm = () => {
 
     const [form, setForm] = useState(initialState)
 
-    const handleSetup = (event) => {
+    const navigate = useNavigate()
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
+    const handleSetup = async (event) => {
         event.preventDefault()
-        authService.signUp({
-            firstName: form.firstName,
-            lastName: form.lastName,
-            email: form.email,
-            password: form.password
-        })
+        setError('')
+        setLoading(true)
+        try {
+            await authService.signUp({
+                first_name: form.firstName,
+                last_name: form.lastName,
+                email: form.email,
+                password: form.password
+            })
+            navigate('/login')
+        } catch (err) {
+            setError(err.response?.data?.error || 'Registration failed. Try again.')
+        } finally { setLoading(false) }
     }
 
     return (
@@ -69,12 +80,13 @@ const SetupForm = () => {
                 id="password"
                 name="password"
                 placeholder="Enter you password"
-                minLength={15}
+                minLength={8}
                 maxLength={64}
                 required
             />
 
-            <SubmitButton label="Create my Workspace" />
+            {error && <p role="alert" className="text-red-700 text-sm">{error}</p>}
+            <SubmitButton label={loading ? "Creating..." : "Create my Workspace"} />
         </form>
     )
 }

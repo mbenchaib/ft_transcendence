@@ -1,0 +1,5 @@
+.venv
+.env
+postgres_data
+ft_trans/db.sqlite3
+__pycache__

@@ -5,13 +5,13 @@ import Footer from '../components/CardFooter'
 import Intro from '../components/CardIntro'
 import authService from '../services/authService'
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 
 
 const LoginOptions = ({value, setForm}) => {
 
     const handleRemember = (event) => {
         const {name, checked} = event.target
-        console.log(checked)
         setForm(prevForm => ({...prevForm, [name]: checked}))
     }
 
@@ -37,10 +37,19 @@ const LoginOptions = ({value, setForm}) => {
 const LoginForm = () => {
     const [form, setForm] = useState({email: "", password: "", remember: false})
 
-    const handleLogin = (event) => {
-        event.preventDefault();
-        console.log(event.target.elements.email.value)
-        authService.login({email: form.email, password: form.password, remember: form.remember})
+    const navigate = useNavigate()
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
+    const handleLogin = async (event) => {
+        event.preventDefault()
+        setError('')
+        setLoading(true)
+        try {
+            await authService.login({ email: form.email, password: form.password })
+            navigate('/workspace')
+        } catch (err) {
+            setError(err.response?.data?.error || 'Login failed. Try again.')
+        } finally { setLoading(false) }
     }
 
     return (
@@ -64,14 +73,15 @@ const LoginForm = () => {
                 id="password"
                 name="password"
                 placeholder="Enter you password"
-                minLength={15}
+                minLength={8}
                 maxLength={64}
                 required
             />
 
             <LoginOptions value={form.remember} setForm={setForm}  />
 
-            <SubmitButton label="Enter Workspace" />
+            {error && <p role="alert" className="text-red-700 text-sm">{error}</p>}
+            <SubmitButton label={loading ? "Signing in..." : "Enter Workspace"} />
         </form>
     )
 }
