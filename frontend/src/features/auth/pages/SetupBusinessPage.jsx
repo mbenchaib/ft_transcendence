@@ -19,8 +19,8 @@ const SetupForm = () => {
     const handleSetup = (event) => {
         event.preventDefault()
         authService.signUp({
-            firstName: form.firstName,
-            lastName: form.lastName,
+            first_name: form.firstName,
+            last_name: form.lastName,
             email: form.email,
             password: form.password
         })

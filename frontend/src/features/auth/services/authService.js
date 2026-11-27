@@ -1,12 +1,12 @@
 import api from "../../../lib/axios"
 
 const login = async (credentials) => {
-  const response = await api.post('auth/register', credentials)
+  const response = await api.post('auth/login', credentials)
   return response.data
 }
 
 const signUp = async (registrationData) => {
-  const response = await api.post('/auth/login', registrationData)
+  const response = await api.post('/auth/register', registrationData)
   return response.data
 }
 
